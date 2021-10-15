@@ -1,0 +1,22 @@
+{
+  "name": "mvhs-ambassador-freshmen-group-shuffle-project",
+  "version": "0.0.0",
+  "description": "shuffle freshmen into pod groups",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Momijiichigo/mvhs-ambassador-freshmen-group-shuffle-project.git"
+  },
+  "author": "Daichi",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Momijiichigo/mvhs-ambassador-freshmen-group-shuffle-project/issues"
+  },
+  "homepage": "https://github.com/Momijiichigo/mvhs-ambassador-freshmen-group-shuffle-project#readme",
+  "dependencies": {
+    "@types/google-apps-script": "^1.0.37"
+  }
+}
