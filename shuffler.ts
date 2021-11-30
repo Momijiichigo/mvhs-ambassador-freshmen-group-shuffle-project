@@ -37,17 +37,28 @@ class Student {
 let podCount = 0
 class Pod {
   added: Student[] = []
-  candidates: {
-    [overlap: number]: Student[]
-  } = {}
   ID: number
-  constructor() {
+  constructor(initialStudent: Student) {
     this.ID = podCount++
+    this.added.push(initialStudent)
+    while (this.added.length < NUM_IN_POD) {
+      this.addLeastOverlappingStudent()
+    }
   }
 
-  addLeastOverlappingStudent(){
-    const student = allStudents.filter(student => !student.assigned).sort((a, b) => this.getOverlapCategoryLevel(a) - this.getOverlapCategoryLevel(b))[0]
-    if(!student){
+  addLeastOverlappingStudent() {
+    let leastOverlap = null
+    let student: Student;
+    allStudents.forEach(s => {
+      if (s.assigned) return
+      const overlap = this.getOverlapCategoryLevel(s)
+      leastOverlap ??= overlap
+      if (overlap < leastOverlap) {
+        leastOverlap = overlap
+        student = s
+      }
+    })
+    if (!student) {
       return
     }
     this.added.push(student)
@@ -55,8 +66,8 @@ class Pod {
   }
   getOverlapCategoryLevel(student: Student) {
     let overlap = 0
-    for(const addedStudent of this.added){
-      for(const key in addedStudent.info){
+    for (const key in student.info) {
+      for (const addedStudent of this.added) {
         student.info[key] === addedStudent.info[key] ? overlap++ : null
       }
     }
@@ -67,4 +78,10 @@ class Pod {
 export function addStudent(sheet: GoogleAppsScript.Spreadsheet.Sheet, row: number, catIDs: number[]) {
   const student = new Student(sheet, row, catIDs)
   allStudents.push(student)
+}
+export function startShuffling() {
+  const numPods = Math.ceil(allStudents.length / NUM_IN_POD)
+  for (let i = numPods; i--;) {
+    const pod = new Pod(allStudents[i])
+  }
 }

@@ -1,3 +1,4 @@
+import { addStudent, startShuffling } from './shuffler'
 /**
  * IDs of each categories.
  * 
@@ -36,7 +37,16 @@ function shuffleFlow_(){
     return range.getColumn()
   })
   if(ui.alert(`Shuffle based on ${catNames.join(', ')}. Proceed?`, ui.ButtonSet.OK_CANCEL) === ui.Button.OK){
-    
+    let row = rangeList[0].getRow()+1
+    while(true){
+      if(!sheet.getRange(row, 1).getValue()) break
+      addStudent(sheet, row, categoryIDs)
+      row++
+    }
+    startShuffling()
+    ui.alert(`Shuffled. Proceed?`, ui.ButtonSet.OK)
+  }else {
+    ui.alert('Cancelled')
   }
 }
 //Browser.msgBox('Please select categories')
