@@ -52,7 +52,7 @@ class Pod {
     allStudents.forEach(s => {
       if (s.assigned) return
       const overlap = this.getOverlapCategoryLevel(s)
-      leastOverlap ??= overlap
+      if(!leastOverlap) leastOverlap = overlap
       if (overlap < leastOverlap) {
         leastOverlap = overlap
         student = s
