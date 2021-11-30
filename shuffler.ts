@@ -25,7 +25,7 @@ class Student {
       info[col] = sheet.getRange(row, col).getDisplayValue()
     });
     // @ts-ignore
-    this.id = sheet.getRange(row, 0).getDisplayValue() | 0
+    this.id = sheet.getRange(row, 1).getDisplayValue() | 0
     this.row = row
     this.info = info
   }
@@ -53,7 +53,7 @@ class Pod {
       if (s.assigned) return
       const overlap = this.getOverlapCategoryLevel(s)
       if(!leastOverlap) leastOverlap = overlap
-      if (overlap < leastOverlap) {
+      else if (overlap < leastOverlap) {
         leastOverlap = overlap
         student = s
       }
