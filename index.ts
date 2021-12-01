@@ -13,7 +13,7 @@ function onOpen() {
   const ui = SpreadsheetApp.getUi();
   // Or DocumentApp or FormApp.
   ui.createMenu('Student Shuffler')
-      .addItem('Instruction', 'showInstruction_')
+      .addItem('How To', 'showInstruction_')
       .addSeparator()
       .addItem('Start Shuffling', 'shuffleFlow_')
       .addToUi();
@@ -25,7 +25,7 @@ function onOpen() {
   // spreadsheet.addMenu('Student Shuffle', menuItems);
 }
 function showInstruction_(){
-  Browser.msgBox('Please select categories (Hold ⌘ or Ctrl) on top row\n then blahblahblah')
+  Browser.msgBox('Please select column names (Hold ⌘ or Ctrl) to select the characteristic factor you would like to consider within the shuffle. Then select \'Start Shuffling\' to shuffle the pod groups.')
 }
 function shuffleFlow_(){
   const ui = SpreadsheetApp.getUi();
