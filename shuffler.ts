@@ -3,7 +3,6 @@
 
  Shuffling students by multiple characteristics and assigning them to small pod groups.
 */
-const ui = SpreadsheetApp.getUi();
 const NUM_IN_POD = 4;
 const COL_POD = 10
 const allStudents: Student[] = []
@@ -102,7 +101,4 @@ export function startShuffling() {
     new Pod(student)
     numPods++
   }
-  // for(const student of allStudents){
-  //   student.writePodIdToSheet()
-  // }
 }
