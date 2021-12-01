@@ -53,16 +53,15 @@ class Pod {
       if(!this.addLeastOverlappingStudent()) break;
     }
     ui.alert(this.added.length+this.added.map(s => JSON.stringify(s.info)).join(','));
-    
   }
 
   addLeastOverlappingStudent() {
-    let leastOverlap = null
+    let leastOverlap = Infinity
     let student: Student;
     allStudents.forEach(s => {
       if (s.assigned) return;
       const overlap = this.getOverlapCategoryLevel(s)
-      if (leastOverlap === null || overlap < leastOverlap) {
+      if (overlap < leastOverlap) {
         leastOverlap = overlap
         student = s
       }
@@ -96,14 +95,15 @@ export function addStudent(sheet: GoogleAppsScript.Spreadsheet.Sheet, row: numbe
   allStudents.push(student)
 }
 export function startShuffling() {
-  const numPods = Math.ceil(allStudents.length / NUM_IN_POD)
-  for (let i = 0; i < numPods;) {
+  const totalNumPods = Math.ceil(allStudents.length / NUM_IN_POD)
+
+  for (let i = 0, numPods = 0; numPods < totalNumPods; i++) {
     const student = allStudents[i]
     if (student.assigned) {
       continue
     }
     new Pod(student)
-    i++
+    numPods++
   }
   // for(const student of allStudents){
   //   student.writePodIdToSheet()
