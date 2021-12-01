@@ -44,7 +44,7 @@ function shuffleFlow_(){
       row++
     }
     startShuffling()
-    ui.alert('Shuffled. Proceed?', ui.ButtonSet.OK)
+    ui.alert('Shuffled.', ui.ButtonSet.OK)
   }else {
     ui.alert('Cancelled')
   }
