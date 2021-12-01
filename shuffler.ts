@@ -48,11 +48,9 @@ class Pod {
     
     this.ID = podCount++
     this.addStudent(initialStudent)
-    ui.alert(`Pod ${this.ID} created`)
     while (this.added.length < NUM_IN_POD) {
       if(!this.addLeastOverlappingStudent()) break;
     }
-    ui.alert(this.added.length+this.added.map(s => JSON.stringify(s.info)).join(','));
   }
 
   addLeastOverlappingStudent() {
@@ -69,7 +67,6 @@ class Pod {
     //console.log('least overlap:',leastOverlap);
 
     if (!student) {
-      ui.alert('No more students to add')
       return false;
     }
     this.addStudent(student)
