@@ -17,7 +17,7 @@ function onOpen() {
       .addSeparator()
       .addItem('Start Shuffling', 'shuffleFlow_')
       .addToUi();
-  const spreadsheet = SpreadsheetApp.getActive()
+  // const spreadsheet = SpreadsheetApp.getActive()
   // const menuItems = [
   //   { name: 'Start...', functionName: 'shuffleFlow_' },
   //   //{ name: 'Generate step-by-step...', functionName: 'generateStepByStep_' }
