@@ -3,7 +3,7 @@
 
  Shuffling students by multiple characteristics and assigning them to small pod groups.
 */
-
+const ui = SpreadsheetApp.getUi();
 const NUM_IN_POD = 4;
 const COL_POD = 10
 const allStudents: Student[] = []
@@ -18,6 +18,7 @@ class Student {
   }
   assigned: boolean = false
   sheet: GoogleAppsScript.Spreadsheet.Sheet
+  podID: number
   constructor(sheet: GoogleAppsScript.Spreadsheet.Sheet, row: number, catIDs: number[]) {
     this.sheet = sheet
     const info = {}
@@ -29,49 +30,64 @@ class Student {
     this.row = row
     this.info = info
   }
-  writePodId(podID: number) {
-    this.sheet.getRange(this.row, COL_POD).setValue(podID)
+  assignPod(podID: number) {
+    this.podID = podID
     this.assigned = true
+    this.writePodIdToSheet()
   }
+  writePodIdToSheet() {
+    this.sheet.getRange(this.row, COL_POD).setValue(this.podID)
+  }
+
 }
-let podCount = 0
+let podCount = 1
 class Pod {
   added: Student[] = []
   ID: number
   constructor(initialStudent: Student) {
+    
     this.ID = podCount++
-    this.added.push(initialStudent)
+    this.addStudent(initialStudent)
+    ui.alert(`Pod ${this.ID} created`)
     while (this.added.length < NUM_IN_POD) {
-      this.addLeastOverlappingStudent()
+      if(!this.addLeastOverlappingStudent()) break;
     }
+    ui.alert(this.added.length+this.added.map(s => JSON.stringify(s.info)).join(','));
+    
   }
 
   addLeastOverlappingStudent() {
     let leastOverlap = null
     let student: Student;
     allStudents.forEach(s => {
-      if (s.assigned) return
+      if (s.assigned) return;
       const overlap = this.getOverlapCategoryLevel(s)
-      if(!leastOverlap) leastOverlap = overlap
-      else if (overlap < leastOverlap) {
+      if (leastOverlap === null || overlap < leastOverlap) {
         leastOverlap = overlap
         student = s
       }
     })
+    //console.log('least overlap:',leastOverlap);
+
     if (!student) {
-      return
+      ui.alert('No more students to add')
+      return false;
     }
-    this.added.push(student)
-    student.writePodId(this.ID)
+    this.addStudent(student)
+    return true;
   }
   getOverlapCategoryLevel(student: Student) {
     let overlap = 0
-    for (const key in student.info) {
-      for (const addedStudent of this.added) {
-        student.info[key] === addedStudent.info[key] ? overlap++ : null
+    for (const addedStudent of this.added) {
+      for (const key in student.info) {
+        if(student.info[key] === addedStudent.info[key]) overlap++
       }
     }
     return overlap
+  }
+  addStudent(student: Student) {
+    this.added.push(student)
+    student.assignPod(this.ID)
   }
 }
 
@@ -81,7 +97,15 @@ export function addStudent(sheet: GoogleAppsScript.Spreadsheet.Sheet, row: numbe
 }
 export function startShuffling() {
   const numPods = Math.ceil(allStudents.length / NUM_IN_POD)
-  for (let i = numPods; i--;) {
-    const pod = new Pod(allStudents[i])
+  for (let i = 0; i < numPods;) {
+    const student = allStudents[i]
+    if (student.assigned) {
+      continue
+    }
+    new Pod(student)
+    i++
   }
+  // for(const student of allStudents){
+  //   student.writePodIdToSheet()
+  // }
 }

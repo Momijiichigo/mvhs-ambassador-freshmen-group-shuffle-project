@@ -30,10 +30,10 @@ function showInstruction_(){
 function shuffleFlow_(){
   const ui = SpreadsheetApp.getUi();
   const sheet = SpreadsheetApp.getActive().getActiveSheet()
-  const rangeList = sheet.getActiveRangeList().breakApart().getRanges()
+  const rangeList = sheet.getActiveRangeList().getRanges()
   const catNames = []
   categoryIDs = rangeList.map(range=>{
-    catNames.push(range.getValue())
+    catNames.push(...range.getValues())
     return range.getColumn()
   })
   if(ui.alert('Shuffle based on '+catNames.join(', ')+'. Proceed?', ui.ButtonSet.OK_CANCEL) === ui.Button.OK){
