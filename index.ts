@@ -1,7 +1,8 @@
 import { addStudent, startShuffling } from './shuffler'
+//aaaa
 /**
  * IDs of each categories.
- * 
+ *
  * The value is column of the sheet.
  */
 let categoryIDs: number[] = []
@@ -12,7 +13,7 @@ let categoryIDs: number[] = []
 function onOpen() {
   const ui = SpreadsheetApp.getUi();
   // Or DocumentApp or FormApp.
-  ui.createMenu('Student Shuffler')
+  ui.createMenu('Student Shuffler!!!')
       .addItem('How To', 'showInstruction_')
       .addSeparator()
       .addItem('Start Shuffling', 'shuffleFlow_')
