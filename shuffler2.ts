@@ -2,9 +2,7 @@ import { NUM_IN_POD, COL_POD, studentAdder, shuffleStarter } from "./info"
 const allStudents_2: Student_2[] = []
 
 type CetegoryID = number
-type StudentID = number
 class Student_2 {
-  id: StudentID
   row: number
   info: {
     [key: CetegoryID]: string
@@ -18,8 +16,6 @@ class Student_2 {
     catIDs.forEach(col => {
       info[col] = sheet.getRange(row, col).getDisplayValue()
     });
-    // @ts-ignore
-    this.id = sheet.getRange(row, 1).getDisplayValue() | 0
     this.row = row
     this.info = info
   }
