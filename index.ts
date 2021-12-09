@@ -28,8 +28,8 @@ function onOpen() {
     .addSeparator()
     .addSubMenu(
       ui.createMenu('Start Shuffling')
-        .addItem('Algorithm 1', 'startShuffle_1_')
-        .addItem('Algorithm 2', 'startShuffle_2_')
+        .addItem('Algorithm A', 'startShuffle_A_')
+        .addItem('Algorithm B', 'startShuffle_B_')
     )
     .addToUi();
   // const spreadsheet = SpreadsheetApp.getActive()
@@ -43,13 +43,13 @@ function showInstruction_() {
   Browser.msgBox(`Please select column names (Hold ⌘ or Ctrl) 
 to select the characteristic factor you would like to consider within the shuffle. (e.g. 'Gender', 'Last School', and etc. )`)
   Browser.msgBox(`Then select 'Start Shuffling' from the menu to shuffle the pod groups.`)
-  Browser.msgBox(`You can choose the algorithm of shuffling. (Algorithm 2 is experimental.)`)
+  Browser.msgBox(`You can choose the algorithm of shuffling. (Algorithm B is experimental. A is recommended.)`)
 
 }
-function startShuffle_1_() {
+function startShuffle_A_() {
   shuffleFlow_(1)
 }
-function startShuffle_2_() {
+function startShuffle_B_() {
   shuffleFlow_(0)
 }
 function shuffleFlow_(algorithm: number) {
