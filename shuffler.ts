@@ -1,10 +1,8 @@
 /*
  https://docs.google.com/spreadsheets/d/1ZFP1QGj8zE2jrvSP3_hKDSGKWsZBxtPM_StQzl6ZAnQ/edit#gid=0
 
- Shuffling students by multiple characteristics and assigning them to small pod groups.
 */
-const NUM_IN_POD = 4;
-const COL_POD = 10
+import { NUM_IN_POD, COL_POD, shuffleStarter, studentAdder } from "./info"
 const allStudents: Student[] = []
 
 type CetegoryID = number
@@ -36,6 +34,8 @@ class Student {
   }
   writePodIdToSheet() {
     this.sheet.getRange(this.row, COL_POD).setValue(this.podID)
+    console.log(`${this.id} assigned to pod ${this.podID}`);
+    
   }
 
 }
@@ -47,6 +47,9 @@ class Pod {
     
     this.ID = podCount++
     this.addStudent(initialStudent)
+    /* @ts-ignore */
+    const { NUM_IN_POD } = exports
+
     while (this.added.length < NUM_IN_POD) {
       if(!this.addLeastOverlappingStudent()) break;
     }
@@ -86,12 +89,13 @@ class Pod {
   }
 }
 
-export function addStudent(sheet: GoogleAppsScript.Spreadsheet.Sheet, row: number, catIDs: number[]) {
+export const addStudent: studentAdder = (sheet: GoogleAppsScript.Spreadsheet.Sheet, row: number, catIDs: number[]) => {
   const student = new Student(sheet, row, catIDs)
   allStudents.push(student)
 }
-export function startShuffling() {
-  const totalNumPods = Math.ceil(allStudents.length / NUM_IN_POD)
+export const startShuffling: shuffleStarter = (numInPod: number) => {
+  
+  const totalNumPods = Math.ceil(allStudents.length / numInPod)
 
   for (let i = 0, numPods = 0; numPods < totalNumPods; i++) {
     const student = allStudents[i]
