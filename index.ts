@@ -1,21 +1,22 @@
 /*
-// GAS ts support sucks. I need to make weird codes for module resolving.
+// ts support of GAS sucks. I need to make weird codes for module resolving.
 // when there is  `exports.`, that's the place messed up by GAS spec.
 
 import { addStudent, startShuffling, dispose } from './shuffler'
-import { addStudent_2, startShuffling_2, dispose_2 } from './shuffler2'
-
-const studentAdderList = [addStudent, addStudent_2]
-const shufflerList = [startShuffling, startShuffling_2]
-const disposers = [dispose, dispose_2]
 */
-
+import type { studentAdder, shuffleStarter } from "./shuffler"
 /**
  * IDs of each categories.
  * 
  * The value is column of the sheet.
  */
 const categoryIDs: number[] = []
+
+globalThis.libName = ''
+function init(libName: string) {
+  globalThis.libName = libName + '.'
+  onOpen()
+}
 /**
  * A special function that runs when the spreadsheet is open, used to add a
  * custom menu to the spreadsheet.
@@ -24,64 +25,75 @@ function onOpen() {
   const ui = SpreadsheetApp.getUi();
   // Or DocumentApp or FormApp.
   ui.createMenu('Student Shuffler')
-    .addItem('How To', 'showInstruction_')
+    .addItem('How To', globalThis.libName + 'showInstruction')
     .addSeparator()
-    .addSubMenu(
-      ui.createMenu('Start Shuffling')
-        .addItem('Algorithm A', 'startShuffle_A_')
-        .addItem('Algorithm B', 'startShuffle_B_')
-    )
+    .addItem('Start Shuffling', globalThis.libName + 'shuffleFlow')
     .addToUi();
-  // const spreadsheet = SpreadsheetApp.getActive()
-  // const menuItems = [
-  //   { name: 'Start...', functionName: 'shuffleFlow_' },
-  //   //{ name: 'Generate step-by-step...', functionName: 'generateStepByStep_' }
-  // ];
-  // spreadsheet.addMenu('Student Shuffle', menuItems);
 }
-function showInstruction_() {
-  Browser.msgBox(`Please select column names (Hold ⌘ or Ctrl) 
-to select the characteristic factor you would like to consider within the shuffle. (e.g. 'Gender', 'Last School', and etc. )`)
+function showInstruction() {
+  Browser.msgBox(
+    `Please select column names (Hold ⌘ or Ctrl)
+ to select the characteristic factor you would like to consider
+ within the shuffle. (e.g. 'Gender', 'Last School', and etc. )`
+  )
   Browser.msgBox(`Then select 'Start Shuffling' from the menu to shuffle the pod groups.`)
-  Browser.msgBox(`You can choose the algorithm of shuffling. (Algorithm B is experimental. A is recommended.)`)
 
 }
-function startShuffle_A_() {
-  shuffleFlow_(1)
-}
-function startShuffle_B_() {
-  shuffleFlow_(0)
-}
-function shuffleFlow_(algorithm: number) {
+const RESULT_SHEET_NAME = 'Pods Result'
+function shuffleFlow() {
   /* @ts-ignore */
-  const studentAdderList = [exports.addStudent, exports.addStudent_2];
+  const addStudent: studentAdder = exports.addStudent;
   /* @ts-ignore */
-  const shufflerList = [exports.startShuffling, exports.startShuffling_2];
+  const shuffler: shuffleStarter = exports.startShuffling;
 
   const ui = SpreadsheetApp.getUi();
-  const sheet = SpreadsheetApp.getActive().getActiveSheet()
+  const spreadSheet = SpreadsheetApp.getActive()
+
+
+  const sheet = spreadSheet.getActiveSheet()
   const rangeList = sheet.getActiveRangeList().getRanges()
   const catNames = []
   rangeList.forEach(range => {
     catNames.push(...range.getValues())
     const colStart = range.getColumn()
     const colEnd = range.getLastColumn()
-    for(let i=colStart;i<=colEnd;i++){
+    for (let i = colStart; i <= colEnd; i++) {
       categoryIDs.push(i)
     }
   })
   if (ui.alert('Shuffle based on ' + catNames.join(', ') + '. Proceed?', ui.ButtonSet.OK_CANCEL) === ui.Button.OK) {
-    const numInPod = parseInt(ui.prompt('please input the minimum number of students in a pod', ui.ButtonSet.OK_CANCEL).getResponseText()) || 10
-    
+    const numInPod = parseInt(
+      ui
+        .prompt('please input the minimum number of students in a pod', ui.ButtonSet.OK_CANCEL)
+        .getResponseText()
+    ) || 10
+
     let row = rangeList[0].getRow() + 1;
-    while (true) {
-      if (!sheet.getRange(row, 1).getValue()) break;
-      studentAdderList[algorithm](sheet, row, categoryIDs)
+    const MAX_ROW = sheet.getLastRow()
+    const MAX_COL = sheet.getLastColumn()
+    
+    while (row <= MAX_ROW) {
+      if (!sheet.getRange(row, 1).getValue()) continue;
+      addStudent({
+        sheet,
+        row,
+        catIDs: categoryIDs,
+        MAX_COL
+      })
       row++
     }
-    shufflerList[algorithm](numInPod)
+    
+    // remove old result sheet
+    const oldResultSheet = spreadSheet.getSheetByName(RESULT_SHEET_NAME)
+    if (oldResultSheet) spreadSheet.deleteSheet(oldResultSheet)
+    // add result sheet
+    const resultSheet = spreadSheet.insertSheet();
+    resultSheet.setName(RESULT_SHEET_NAME)
+
+    // prepare field names (First row in result sheet)
+    sheet.getRange(1, 1, 1, MAX_COL).copyTo(resultSheet.getRange(1,2))
+    // shuffle
+    shuffler(numInPod, resultSheet)
     ui.alert('Shuffled.', ui.ButtonSet.OK)
-  } else {
-    ui.alert('Cancelled')
   }
 }
